@@ -1,0 +1,114 @@
+import json
+import time
+from typing import List
+
+import requests
+from loguru import logger
+
+from .base import TradesAPI
+from .trade import Trade
+
+
+class KrakenRestAPI(TradesAPI):
+    def __init__(self, pairs: List[str], last_n_days: int):
+        self.pairs = pairs
+        self.last_n_days = last_n_days
+
+        self.apis = [
+            KrakenRestAPISinglePair(pair=pair, last_n_days=last_n_days)
+            for pair in self.pairs
+        ]
+
+    def get_trades(self) -> List[Trade]:
+        """
+        Get trades for each pair, sort them by timestamp and return the trades.
+        """
+        trades = []
+        for api in self.apis:
+            if not api.is_done():
+                trades += api.get_trades()
+
+        # Sort the trades by timestamp
+        trades.sort(key=lambda x: x.timestamp_ms)
+        
+        return trades
+
+    def is_done(self) -> bool:
+        """
+        We are done when all the APIs are done.
+        """
+        for api in self.apis:
+            if not api.is_done():
+                return False
+        return True
+
+
+class KrakenRestAPISinglePair(TradesAPI):
+    URL = 'https://api.kraken.com/0/public/Trades'
+
+    def __init__(
+        self,
+        pair: str,
+        last_n_days: int,
+    ):
+        self.pair = pair
+        self.last_n_days = last_n_days
+        self._is_done = False
+
+        # Gets current Unix timestamp in seconds (the Kraken API expects the timestamp in seconds)
+        self.since_timestamp_s = int(time.time()) - self.last_n_days * 24 * 60 * 60  #days * hours * minutes * seconds
+
+        logger.info(
+            f'Getting trades for pair {self.pair} for the last {self.last_n_days} days (in timestamp_seconds = {self.since_timestamp_s})'
+        )
+
+    def get_trades(self) -> List[Trade]:
+        """
+        Sends a request to the Kraken API and returns the trades for the pair.
+        """
+        headers = {'Accept': 'application/json'}
+        params = {
+            'pair': self.pair,
+            'since': self.since_timestamp_s,
+        }
+
+        # Send the request
+        try:
+            response = requests.request('GET', self.URL, headers=headers, params=params)
+        except requests.exceptions.RequestException as e:
+            # NOTE: One should check API rate limits and handle them properly
+            logger.error(f'Failed to get trades: {e}')
+            raise
+
+        # Parse response object as json
+        try:
+            data = json.loads(response.text)
+        except json.JSONDecodeError as e:
+            logger.error(f'Failed to parse response as json: {e}')
+            return []
+
+        # Unpack trades from the response for the given pair
+        try:
+            trades = data['result'][self.pair]
+        except KeyError as e:
+            logger.error(f'Failed to get trades for pair {self.pair}: {e}')
+            return []
+
+        # Convert the trades retrieved from the API to custom Trade objects
+        trades = [
+            Trade.from_kraken_rest_api_response(
+                pair=self.pair,
+                price=trade[0],
+                volume=trade[1],
+                timestamp_sec=trade[2],
+            )
+            for trade in trades
+        ]
+        
+        # Set is_done to finished
+        self._is_done = True
+
+        return trades
+
+    def is_done(self) -> bool:
+        return self._is_done
