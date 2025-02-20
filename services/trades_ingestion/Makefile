@@ -1,12 +1,12 @@
 run-dev-live:
 	@echo "Running live trades ingestion"
 	cp ./config/env/live.settings.env ./config/env/settings.env
-	uv run python etl_pipeline.py
+	uv run python pipeline.py
 
 run-dev-historical:
 	@echo "Running historical trades ingestion"
 	cp ./config/env/historical.settings.env ./config/env/settings.env
-	uv run python etl_pipeline.py
+	uv run python pipeline.py
 
 build:
 	@echo "Building trades image"

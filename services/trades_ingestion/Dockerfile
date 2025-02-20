@@ -28,4 +28,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 WORKDIR /app
 
 # Run our service
-CMD ["python3", "/app/etl_pipeline.py"]
+CMD ["python3", "/app/pipeline.py"]
