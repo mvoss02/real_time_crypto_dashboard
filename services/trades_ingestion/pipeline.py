@@ -43,7 +43,7 @@ def pipeline(
             for trade in trades:
                 # Serialize the trade to a JSON string
                 message = topic.serialize(
-                    key=f"{trade.pair.replace('/', '-')}-{trade.timestamp}",  # Unique key for the trade - overwrites the previous trade (if applicable)
+                    key=f"{trade.pair.replace('/', '-')}",  # Unique key for the trade - overwrites the previous trade (if applicable)
                     value=trade.to_dict(),
                 )
 
