@@ -1,30 +1,42 @@
-# First, build the application in the `/app` directory.
-# See `Dockerfile` for details.
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+
+# Install build dependencies for packages requiring compilation (e.g., hopsworks -> pyjks -> twofish)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
 WORKDIR /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
-ADD . /app
+
+# Enable bytecode compilation and copy mode
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+# Copy lockfile and pyproject.toml first for dependency caching
+COPY uv.lock pyproject.toml /app/
+
+# Install project dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
+# Copy the rest of the application
+COPY . /app/
 
-# Then, use a final image without uv
-FROM python:3.12-slim-bookworm
-# It is important to use the image that matches the builder, as the path to the
-# Python executable must be the same, e.g., using `python:3.11-slim-bookworm`
-# will fail.
+# Ensure the virtual environment is fully synced with project dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-WORKDIR /app
-
-# Copy the application from the builder
-COPY --from=builder --chown=app:app /app /app
-
-# Place executables in the environment at the front of the path
+# Place virtual environment executables in the PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Run the FastAPI application by default
-CMD ["uv run streamlit run", "dashboard_run.py"]
+# Expose Streamlit's default port
+EXPOSE 8501
+
+# Add a healthcheck
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+
+# Run the Streamlit app
+ENTRYPOINT ["streamlit", "run", "dashboard_run.py", "--server.port=8501", "--server.address=0.0.0.0"]

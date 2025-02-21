@@ -34,11 +34,10 @@ class FeatureReader:
             hopsworks_project_name,
             hopsworks_api_key,
         )
-        
+
         # Get feature group (NOTE: we can do that here because we only have one feature grouzp at the moment)
         self._feature_group = self._get_feature_group(
-            name=feature_group_name,
-            version=feature_group_version
+            name=feature_group_name, version=feature_group_version
         )
 
         # Get feature view (if it exists, othwerwise create)
@@ -65,11 +64,9 @@ class FeatureReader:
         try:
             # If no query is provided, select all columns from the feature group
             query = self._feature_group.select_all()
-            
+
             return self._feature_store.get_or_create_feature_view(
-                name=feature_view_name,
-                version=feature_view_version,
-                query=query
+                name=feature_view_name, version=feature_view_version, query=query
             )
         except Exception as e:
             logger.error(f'Could not create or fetch the feature view. Error: {e}')
@@ -86,32 +83,46 @@ class FeatureReader:
 
     def get_data(self, n_days: int) -> pd.DataFrame:
         """
-        Use the self._feature_view to get the training data going back `n_days` days.
+        Use the self._feature_view to get the an initial dataset going back `n_days` days.
         """
         # Data from feature store
         logger.info(f'Getting data going back {n_days} days')
         data = self._feature_view.get_batch_data(
             start_time=datetime.now() - timedelta(days=n_days),
             end_time=datetime.now(),
-            dataframe_type='pandas'
+            dataframe_type='pandas',
         )
 
         return data
-    
 
-if __name__ == "__main__":
-    from config.config import hopsworksSettingsConfig, hopsworksCredentialsConfig
-    
+
+if __name__ == '__main__':
+    import time
+
+    from config.config import hopsworksCredentialsConfig, hopsworksSettingsConfig
+
     reader = FeatureReader(
         hopsworks_project_name=hopsworksCredentialsConfig.project_name,
         hopsworks_api_key=hopsworksCredentialsConfig.api_key,
-        feature_group_name=hopsworksSettingsConfig.feature_group_name, 
+        feature_group_name=hopsworksSettingsConfig.feature_group_name,
         feature_group_version=hopsworksSettingsConfig.feature_group_version,
         feature_view_name=hopsworksSettingsConfig.feature_view_name,
         feature_view_version=hopsworksSettingsConfig.feature_view_version,
     )
-    
+
     try:
-        logger.info(reader.get_data(n_days=10))
+        df = reader.get_data(n_days=10)
+        logger.info(f'Fetched data successfully: {df}')
     except Exception as e:
-        logger.error(f'Failed to fecth data from feature view. Error: {e}')
+        logger.error(f'Failed to fetch data from feature view. Error: {e}')
+        raise
+
+    try:
+        waiting_sec = 20
+        logger.info(f'Sleeping for {waiting_sec}')
+        time.sleep(waiting_sec)
+        df_new_data = reader.get_data(n_days=1)
+        logger.info(f'Fetched data successfully: {df_new_data}')
+    except Exception as e:
+        logger.error(f'Failed to fetch data from feature view. Error: {e}')
+        raise
