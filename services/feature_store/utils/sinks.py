@@ -20,7 +20,7 @@ class HopsworksFeatureStoreSink(BatchingSink):
         feature_group_version: int,
         feature_group_primary_keys: list[str],
         feature_group_event_time: str,
-        feature_group_materialization_interval_minutes: int,
+        feature_group_materialization_interval_minutes: int = 5,
     ):
         """
         Establish a connection to the Hopsworks Feature Store
