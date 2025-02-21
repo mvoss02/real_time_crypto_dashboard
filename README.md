@@ -37,6 +37,12 @@ uv tool install pre-commit
 pre-commit install
 ```
 
+6. Install Hopsworks
+
+```bash
+uv pip install "hopsworks[python]"
+```
+
 ## Usage
 
 1. Neuer Service

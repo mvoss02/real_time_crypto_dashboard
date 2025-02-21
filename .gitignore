@@ -1,5 +1,4 @@
 **/hopsworks_credentials.env
-**/meteostat_credentials.env
 **/*.jsonl
 **/*.csv
 **/*.joblib
