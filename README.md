@@ -1,23 +1,49 @@
 # Real Time Crypto Dashboard
 
-This project will display crypto candles for various crypto currencies in a Dashboard, using Kafka and Hopsworks as a Feature Store. The feature store is added to account for historic data. Also, the project acts as groundwork to build upon. For example, one could add a prediction service or news ingestion service. For now, it mainly focuses on the real-time data ingestion part.
+![Crypto Dashboard](https://img.shields.io/badge/status-in%20development-orange.svg)  
+A real-time cryptocurrency dashboard that ingests live data from the [Kraken WebSocket API](https://docs.kraken.com/api/), processes it into OHLC (Open, High, Low, Close) candlestick data using Kafka, and stores it in a [Hopsworks Feature Store](https://www.hopsworks.ai/). The processed data is then visualized in an interactive [Streamlit](https://streamlit.io/) dashboard. This project serves as a foundation for further extensions, such as predictive analytics or news ingestion.
 
-## Initialize Project
+## Features
 
-1. Initialize a service
+- **Real-Time Data Ingestion**: Streams live crypto data from Kraken via WebSocket.
+- **Data Processing**: Converts raw trades into OHLC candles using Kafka.
+- **Feature Store**: Persists historical and real-time data in Hopsworks.
+- **Visualization**: Displays candlestick charts in a Streamlit dashboard.
+- **Tooling**: Built with modern Python tools like `uv` for dependency management and `ruff` for linting/formatting.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- [Docker](https://www.docker.com/) (for containerized services)
+- [uv](https://github.com/astral-sh/uv) (for dependency management)
+- A Kraken API key (optional for authenticated WebSocket features)
+- A Hopsworks account and API key
+
+### Setup
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/mvoss02/real_time_crypto_dashboard.git
+   cd real_time_crypto_dashboard
+   ```
+
+2. Initialize a service
 
 ```bash
 cd services
 uv init SERVICE_NAME
 ```
 
-2. Add ruff with uv:
+3. Add ruff with uv:
 
 ```bash
 uv tool install ruff
 ```
 
-3. Add pre-commit:
+4. Add pre-commit:
 
 In addition, one needs to add
 
@@ -25,80 +51,62 @@ In addition, one needs to add
 uv tool install pre-commit
 ```
 
-4. In order to automatically run pre-commit hooks add the
+5. In order to automatically run pre-commit hooks add the
    following to files (search for files to your liking on the web):
 
 - .pre-commit-config.yaml
 - ruff.toml
 
-5. Install pre-commit hooks:
+6. Install pre-commit hooks:
 
 ```bash
 pre-commit install
 ```
 
-6. Install Hopsworks
+7. Install Hopsworks
 
 ```bash
 uv pip install "hopsworks[python]"
 ```
 
-## Usage
-
-1. Neuer Service
-
-```bash
-cd services
-uv init NAME_OF_SERVICE
-```
-
-2. Packages
-   2.1. Creating a package
+8. Packages
+   8.1. Creating a package
 
 ```bash
 uv init --lib MY_PACKAGE_NAME
 ```
 
-- Project Structure:
-
-```
-real_time_pipeline/
-├── packages/
-│   ├── src/
-│   │   ├── common/
-│   │   │   ├── __init__.py
-│   │   │   └── kafka_config.py
-│   ├── pyproject.toml
-│   └── requirements.lock
-├── api_reader/
-│   ├── src/
-│   │   ├── __init__.py
-│   │   └── api_reader.py   # API → OHLC → Kafka
-│   ├── Dockerfile
-│   ├── pyproject.toml
-│   └── requirements.lock
-├── dashboard/
-│   ├── src/
-│   │   ├── __init__.py
-│   │   └── app.py         # Kafka → Streamlit
-│   ├── Dockerfile
-│   ├── pyproject.toml
-│   └── requirements.lock
-├── docker-compose.yml
-└── README.md
-```
-
-2.2. Building a package
+8.2. Building a package
 
 ```bash
 uv build
 uv pip install pip install dist/MY_PACKAGE_NAME-0.1.0-py3-none-any.whl
 ```
 
-2.3. Install package in development mode -> does not have to be re-installed with every change made
+8.3. Install package in development mode -> does not have to be re-installed with every change made
 
 ```bash
 uv pip install -e .
 ```
 
-- Weitere Informationen: [https://sarahglasmacher.com/how-to-build-python-package-uv/]
+### Usage
+
+One can run each service individually or instead (the easier approach) use the docker-compose YAML files to, either:
+
+1. Backfill data for a given number of days:
+
+```bash
+make backfill-data
+```
+
+2. Run the live data ingestion (including the dashboard)
+
+```bash
+make start-dashboard-pipeline-live
+```
+
+In order for this to work, Redpanda needs to be running:
+
+```bash
+make start-redpanda
+```
