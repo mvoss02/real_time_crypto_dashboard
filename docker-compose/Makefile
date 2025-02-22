@@ -1,11 +1,11 @@
 # Redpanda-related Commands
 start-redpanda:
 	@echo "Starting Redpanda"
-	docker compose -f redpanda.yml up -d
+	docker compose -f redpanda.yaml up -d
 
 stop-redpanda:
 	@echo "Stopping Redpanda"
-	docker compose -f redpanda.yml down
+	docker compose -f redpanda.yaml down
 
 
 # Data Pieplines
@@ -21,7 +21,7 @@ stop-dashboard-pipeline-live:
 
 ## for historical data
 build-data-backfill-historical:
-	docker compose -f data-backfill-historical.yml build
+	docker compose -f data-backfill-historical.yaml build
 	
 backfill-data: build-data-backfill-historical
 	$(eval RUN_ID := $(shell uuidgen))
@@ -32,9 +32,9 @@ backfill-data: build-data-backfill-historical
 # Remove unused Kafka topic after backfill operations
 clean-backfill-kakfa-topics:
 	@echo "Removing all Kafka topics that contain the word historical"
-	docker compose -f redpanda.yml exec redpanda rpk topic delete -r ".*historical.*"
+	docker compose -f redpanda.yaml exec redpanda rpk topic delete -r ".*historical.*"
 
 # Remove Kafka topics related to changelogs
 clean-changelog-kafka-topics:
 	@echo "Removing all Kafka topics that contain the word changelog"
-	docker compose -f redpanda.yml exec redpanda rpk topic delete -r ".*changelog.*"
+	docker compose -f redpanda.yaml exec redpanda rpk topic delete -r ".*changelog.*"
