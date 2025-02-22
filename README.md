@@ -23,12 +23,12 @@ A real-time cryptocurrency dashboard that ingests live data from the [Kraken Web
 
 ### Setup
 
-1. **Clone the Repository**
+1. Clone the Repository
 
-   ```bash
-   git clone https://github.com/mvoss02/real_time_crypto_dashboard.git
-   cd real_time_crypto_dashboard
-   ```
+```bash
+git clone https://github.com/mvoss02/real_time_crypto_dashboard.git
+cd real_time_crypto_dashboard
+```
 
 2. Initialize a service
 
@@ -70,7 +70,8 @@ uv pip install "hopsworks[python]"
 ```
 
 8. Packages
-   8.1. Creating a package
+
+8.1. Creating a package
 
 ```bash
 uv init --lib MY_PACKAGE_NAME
