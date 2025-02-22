@@ -1,0 +1,55 @@
+version: "3.7"
+name: dashboard-pipeline-live
+networks:
+  redpanda_network:
+    external: true
+    name: redpanda_network
+services:
+  trades_ingestion:
+    build:
+      context: ../services/trades_ingestion
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/trades_ingestion/config/env/live.settings.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
+
+  candles:
+    build:
+      context: ../services/candles
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/candles/config/env/live.settings.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
+
+  feature_store:
+    build:
+      context: ../services/feature_store
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/feature_store/config/env/live.settings.env
+      - ../services/feature_store/config/env/hopsworks_credentials.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
+
+  dashboard:
+    build:
+      context: ../services/dashboard
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/dashboard/config/env/settings.env
+      - ../services/dashboard/config/env/hopsworks_credentials.env
+    environment:
+    restart: always
