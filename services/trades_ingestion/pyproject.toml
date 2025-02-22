@@ -1,7 +1,7 @@
 [project]
 name = "trades-ingestion"
 version = "0.1.0"
-description = "Add your description here"
+description = "Reads in trades from the Kraken API (either form REST historic trades or from the Websocket for live trades)"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

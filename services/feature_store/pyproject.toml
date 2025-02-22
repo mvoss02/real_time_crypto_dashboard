@@ -1,7 +1,7 @@
 [project]
 name = "feature-store"
 version = "0.1.0"
-description = "Add your description here"
+description = "Uploads transformed trades to the Feature Strore (Hopsworks)"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

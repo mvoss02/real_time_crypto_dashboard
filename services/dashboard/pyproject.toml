@@ -1,7 +1,7 @@
 [project]
 name = "dashboard"
 version = "0.1.0"
-description = "Add your description here"
+description = "Runs the streamlit dashboard"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
