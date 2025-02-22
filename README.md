@@ -21,7 +21,7 @@ A real-time cryptocurrency dashboard that ingests live data from the [Kraken Web
 
 ### Prerequisites
 
-- Python 3.10+
+- Python 3.12+
 - [Docker](https://www.docker.com/) (for containerized services)
 - [uv](https://github.com/astral-sh/uv) (for dependency management)
 - A Kraken API key (optional for authenticated WebSocket features)
