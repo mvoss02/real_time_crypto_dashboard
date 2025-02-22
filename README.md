@@ -3,6 +3,9 @@
 ![Crypto Dashboard](https://img.shields.io/badge/status-finished-green)
 A real-time cryptocurrency dashboard that ingests live data from the [Kraken WebSocket API](https://docs.kraken.com/api/), processes it into OHLC (Open, High, Low, Close) candlestick data using Kafka, and stores it in a [Hopsworks Feature Store](https://www.hopsworks.ai/). The processed data is then visualized in an interactive [Streamlit](https://streamlit.io/) dashboard. This project serves as a foundation for further extensions, such as predictive analytics or news ingestion.
 
+![Screnshot displaying landing page](imgs/dashboard_img_1.png)
+![Screnshot displaying candlestick graph](imgs/dashboard_img_2.png)
+
 ## Features
 
 - **Real-Time Data Ingestion**: Streams live crypto data from Kraken via WebSocket.
@@ -10,9 +13,6 @@ A real-time cryptocurrency dashboard that ingests live data from the [Kraken Web
 - **Feature Store**: Persists historical and real-time data in Hopsworks.
 - **Visualization**: Displays candlestick charts in a Streamlit dashboard.
 - **Tooling**: Built with modern Python tools like `uv` for dependency management and `ruff` for linting/formatting.
-
-![Screnshot displaying landing page](imgs/dashboard_img_1.png)
-![Screnshot displaying candlestick graph](imgs/dashboard_img_2.png)
 
 ## Getting Started
 
