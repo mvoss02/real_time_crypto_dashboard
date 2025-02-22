@@ -7,6 +7,8 @@ A real-time cryptocurrency dashboard that ingests live data from the [Kraken Web
 ![Screnshot displaying landing page](imgs/dashboard_img_1.png)
 ![Screnshot displaying candlestick graph](imgs/dashboard_img_2.png)
 
+(Note: the gaps in the data occurred because I stopped the real-time data ingestion during that time.)
+
 ## Features
 
 - **Real-Time Data Ingestion**: Streams live crypto data from Kraken via WebSocket.
