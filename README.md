@@ -1,6 +1,6 @@
 # Real Time Crypto Dashboard
 
-![Crypto Dashboard](https://img.shields.io/badge/status-in%20development-orange.svg)  
+![Crypto Dashboard](https://img.shields.io/badge/status-finished-green)  
 A real-time cryptocurrency dashboard that ingests live data from the [Kraken WebSocket API](https://docs.kraken.com/api/), processes it into OHLC (Open, High, Low, Close) candlestick data using Kafka, and stores it in a [Hopsworks Feature Store](https://www.hopsworks.ai/). The processed data is then visualized in an interactive [Streamlit](https://streamlit.io/) dashboard. This project serves as a foundation for further extensions, such as predictive analytics or news ingestion.
 
 ## Features
