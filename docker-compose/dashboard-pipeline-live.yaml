@@ -51,5 +51,4 @@ services:
     env_file:
       - ../services/dashboard/config/env/settings.env
       - ../services/dashboard/config/env/hopsworks_credentials.env
-    environment:
     restart: always
