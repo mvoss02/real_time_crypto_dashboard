@@ -51,6 +51,6 @@ services:
     env_file:
       - ../services/dashboard/config/env/settings.env
       - ../services/dashboard/config/env/hopsworks_credentials.env
-    pors:
+    ports:
       - "8501:8501"
     restart: always
